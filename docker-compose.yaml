@@ -1,0 +1,34 @@
+version: '2'
+services:
+  nginx:
+    image: nginx-log-files:latest
+    volumes:
+      - ./logs:/var/log/nginx
+    ports:
+      - "8080:80"
+
+  fluentd:
+    build: .
+    volumes:
+      - ./conf:/fluentd/etc
+      - ./logs:/logs
+    links:
+      - "elasticsearch"
+
+  elasticsearch:
+    image: elasticsearch
+    logging:
+      driver: none
+    expose:
+      - 9200
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: kibana
+    logging:
+      driver: none
+    links:
+      - "elasticsearch"
+    ports:
+      - "5601:5601"
